@@ -6,8 +6,11 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 /**
- * Model backing the person form. Bean Validation annotations define the rules
- * used by Spring's {@code Validator} when validating the whole form object.
+ * Model backing the person form. Bean Validation annotations document the
+ * constraints for each field. The UI validates fields in real-time via the
+ * composable {@link cz.masci.springfx.validation.validator.Constraint} framework;
+ * these annotations can additionally be used with a Spring {@code Validator}
+ * for server-side or programmatic validation.
  */
 @Data
 public class PersonForm {
