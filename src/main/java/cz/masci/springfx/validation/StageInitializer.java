@@ -1,6 +1,5 @@
 package cz.masci.springfx.validation;
 
-import cz.masci.springfx.validation.controller.PersonFormController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -26,7 +25,7 @@ public class StageInitializer implements ApplicationListener<StageReadyEvent> {
     public void onApplicationEvent(StageReadyEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(
-                    PersonFormController.class.getResource("person-form.fxml"));
+                    StageInitializer.class.getResource("person-form.fxml"));
             // Let Spring supply the controller so it can inject dependencies.
             loader.setControllerFactory(applicationContext::getBean);
             Parent root = loader.load();
