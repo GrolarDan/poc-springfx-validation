@@ -1,5 +1,8 @@
 package cz.masci.springfx.validation;
 
+import io.github.palexdev.materialfx.theming.JavaFXThemes;
+import io.github.palexdev.materialfx.theming.MaterialFXStylesheets;
+import io.github.palexdev.materialfx.theming.UserAgentBuilder;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
@@ -21,6 +24,18 @@ public class JavaFxApplication extends Application {
         context = new SpringApplicationBuilder(App.class)
                 .headless(false)
                 .run(getParameters().getRaw().toArray(new String[0]));
+
+        UserAgentBuilder.builder()
+                .themes(JavaFXThemes.MODENA)
+                .themes(MaterialFXStylesheets.forAssemble(false))
+//                .themes(DrDAppTheme.TOKENS)
+//                .themes(DrDAppTheme.APP)
+//                .themes(DrDAppTheme.TABLE_VIEW)
+                .setDeploy(true)
+                .setDebug(true)
+                .setResolveAssets(true)
+                .build()
+                .setGlobal();
     }
 
     @Override
