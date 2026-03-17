@@ -8,14 +8,19 @@ import io.github.palexdev.materialfx.builders.control.ComboBuilder;
 import io.github.palexdev.materialfx.builders.control.TextFieldBuilder;
 import io.github.palexdev.materialfx.builders.layout.GridPaneBuilder;
 import io.github.palexdev.materialfx.controls.MFXComboBox;
+import io.github.palexdev.materialfx.controls.MFXTextField;
 import io.github.palexdev.materialfx.enums.FloatMode;
 import io.github.palexdev.materialfx.validation.Constraint;
 import io.github.palexdev.materialfx.validation.Severity;
+import io.github.palexdev.materialfx.validation.Validated;
+import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -46,112 +51,37 @@ public class PersonViewBuilder implements Builder<Region> {
 
         var items = FXCollections.observableList(Arrays.asList(Gender.values()));
 
-        var nameField = TextFieldBuilder.textField()
-                .setFloatingText("Name")
-                .setFloatMode(FloatMode.ABOVE)
-                .setMaxWidth(Double.MAX_VALUE)
-                .setId("nameField")
-                .getNode();
-        GridPane.setColumnSpan(nameField, 2);
-        GridPane.setColumnIndex(nameField, 0);
+        var nameField = createTextField("Name", "nameField");
         nameField.textProperty().bindBidirectional(viewModel.nameProperty());
-        var nameError = LabeledBuilder.control(new Label())
-                .setId("nameError")
-                .setStyleClasses("error-label")
-                .getNode();
-        GridPane.setColumnSpan(nameError, 2);
-        GridPane.setColumnIndex(nameError, 0);
-        nameError.setVisible(false);
-
+        var nameError = createErrorLabel("nameError");
         nameField.getValidator()
                 .constraint(Constraint.of(Severity.ERROR, "Name must not be empty",
                         Bindings.createBooleanBinding(() -> {
                             String t = nameField.getText();
                             return t != null && !t.isBlank();
                         }, nameField.textProperty())));
-        nameField.getValidator().validProperty().addListener((_, _, newValue) -> nameField.pseudoClassStateChanged(INVALID, !newValue));
-        nameField.textProperty().addListener((_, _, newValue) -> {
-            log.debug("Name field text changed to '{}'", newValue);
-            var errors = nameField.getValidator().validate();
-            nameError.setVisible(!errors.isEmpty());
-            if (!errors.isEmpty()) {
-                nameError.setText(errors.getFirst().getMessage());
-            }
-        });
+        wireValidation(nameField, nameField.textProperty(), nameError);
 
-        var ageField = TextFieldBuilder.textField()
-                .setFloatingText("Age")
-                .setFloatMode(FloatMode.ABOVE)
-                .setMaxWidth(Double.MAX_VALUE)
-                .setId("ageField")
-                .getNode();
-        GridPane.setColumnSpan(ageField, 2);
-        GridPane.setColumnIndex(ageField, 0);
+        var ageField = createTextField("Age", "ageField");
         ageField.textProperty().bindBidirectional(viewModel.ageProperty());
-
-        var ageError = LabeledBuilder.control(new Label())
-                .setId("ageError")
-                .setStyleClasses("error-label")
-                .getNode();
-        GridPane.setColumnSpan(ageError, 2);
-        GridPane.setColumnIndex(ageError, 0);
-        ageError.setVisible(false);
-
+        var ageError = createErrorLabel("ageError");
         ageField.getValidator()
-                .constraint(
-                        Constraint.of(
-                                Severity.ERROR,
-                                "Age must not be empty",
-                                Bindings.isNotEmpty(ageField.textProperty())
-                        )
-                )
-                .constraint(Constraint.of(
-                        Severity.ERROR,
-                        "Age must be a number",
+                .constraint(Constraint.of(Severity.ERROR, "Age must not be empty",
+                        Bindings.isNotEmpty(ageField.textProperty())))
+                .constraint(Constraint.of(Severity.ERROR, "Age must be a number",
                         Bindings.createBooleanBinding(() -> {
                             String t = ageField.getText();
                             return t != null && t.matches("-?\\d+");
                         }, ageField.textProperty())));
-        ageField.getValidator().validProperty().addListener((_, _, newValue) -> ageField.pseudoClassStateChanged(INVALID, !newValue));
-        ageField.textProperty().addListener((_, _, newValue) -> {
-            log.debug("Age field text changed to '{}'", newValue);
-            var errors = ageField.getValidator().validate();
-            ageError.setVisible(!errors.isEmpty());
-            if (!errors.isEmpty()) {
-                ageError.setText(errors.getFirst().getMessage());
-            }
-        });
+        wireValidation(ageField, ageField.textProperty(), ageError);
 
-        var genderComboBox = ComboBuilder.combo(new MFXComboBox<Gender>())
-                .setItems(items)
-                .setFloatingText("Gender")
-                .setFloatMode(FloatMode.ABOVE)
-                .setMaxWidth(Double.MAX_VALUE)
-                .setId("genderComboBox")
-                .getNode();
-        GridPane.setColumnSpan(genderComboBox, 2);
-        GridPane.setColumnIndex(genderComboBox, 0);
+        var genderComboBox = createComboBox(items, "Gender", "genderComboBox");
         genderComboBox.valueProperty().bindBidirectional(viewModel.genderProperty());
-
-        var genderError = LabeledBuilder.control(new Label())
-                .setId("genderError")
-                .setStyleClasses("error-label")
-                .getNode();
-        GridPane.setColumnSpan(genderError, 2);
-        GridPane.setColumnIndex(genderError, 0);
-        genderError.setVisible(false);
-
+        var genderError = createErrorLabel("genderError");
         genderComboBox.getValidator()
                 .constraint(Constraint.of(Severity.ERROR, "Gender must be selected",
                         genderComboBox.valueProperty().isNotNull()));
-        genderComboBox.getValidator().validProperty().addListener((_, _, newValue) -> genderComboBox.pseudoClassStateChanged(INVALID, !newValue));
-        genderComboBox.valueProperty().addListener((_, _, _) -> {
-            var errors = genderComboBox.getValidator().validate();
-            genderError.setVisible(!errors.isEmpty());
-            if (!errors.isEmpty()) {
-                genderError.setText(errors.getFirst().getMessage());
-            }
-        });
+        wireValidation(genderComboBox, genderComboBox.valueProperty(), genderError);
 
         var saveButton = ButtonBuilder.button()
                 .setOnAction(_ -> onChange.run())
@@ -188,5 +118,53 @@ public class PersonViewBuilder implements Builder<Region> {
                 .setPadding(new Insets(20.0, 20.0, 20.0, 20.0))
                 .getNode();
 
+    }
+
+    private MFXTextField createTextField(String floatingText, String id) {
+        var field = TextFieldBuilder.textField()
+                .setFloatingText(floatingText)
+                .setFloatMode(FloatMode.ABOVE)
+                .setMaxWidth(Double.MAX_VALUE)
+                .setId(id)
+                .getNode();
+        GridPane.setColumnSpan(field, 2);
+        GridPane.setColumnIndex(field, 0);
+        return field;
+    }
+
+    private <T> MFXComboBox<T> createComboBox(ObservableList<T> items, String floatingText, String id) {
+        var combo = ComboBuilder.combo(new MFXComboBox<T>())
+                .setItems(items)
+                .setFloatingText(floatingText)
+                .setFloatMode(FloatMode.ABOVE)
+                .setMaxWidth(Double.MAX_VALUE)
+                .setId(id)
+                .getNode();
+        GridPane.setColumnSpan(combo, 2);
+        GridPane.setColumnIndex(combo, 0);
+        return combo;
+    }
+
+    private Label createErrorLabel(String id) {
+        var label = (Label) LabeledBuilder.control(new Label())
+                .setId(id)
+                .setStyleClasses("error-label")
+                .getNode();
+        GridPane.setColumnSpan(label, 2);
+        GridPane.setColumnIndex(label, 0);
+        label.setVisible(false);
+        return label;
+    }
+
+    private <T extends Node & Validated> void wireValidation(T control, Observable triggerObservable, Label errorLabel) {
+        control.getValidator().validProperty().addListener((_, _, newValue) -> control.pseudoClassStateChanged(INVALID, !newValue));
+        triggerObservable.addListener(_ -> {
+            log.debug("{} changed", control.getId());
+            var errors = control.getValidator().validate();
+            errorLabel.setVisible(!errors.isEmpty());
+            if (!errors.isEmpty()) {
+                errorLabel.setText(errors.getFirst().getMessage());
+            }
+        });
     }
 }
