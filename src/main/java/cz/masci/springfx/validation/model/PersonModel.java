@@ -10,16 +10,11 @@ import javafx.beans.property.StringProperty;
 
 public class PersonModel {
 
-    @NotBlank(message = "Name must not be empty")
     private final StringProperty name = new SimpleStringProperty();
-
-    @NotBlank(message = "Age must not be empty")
-    @Pattern(regexp = "-?\\d+", message = "Age must be a number")
     private final StringProperty age = new SimpleStringProperty();
-
-    @NotNull(message = "Gender must be selected")
     private final ObjectProperty<Gender> gender = new SimpleObjectProperty<>();
 
+    @NotBlank(message = "Name must not be empty")
     public String getName() {
         return name.get();
     }
@@ -28,6 +23,8 @@ public class PersonModel {
         return name;
     }
 
+    @NotBlank(message = "Age must not be empty")
+    @Pattern(regexp = "-?\\d+", message = "Age must be a number")
     public String getAge() {
         return age.get();
     }
@@ -36,6 +33,7 @@ public class PersonModel {
         return age;
     }
 
+    @NotNull(message = "Gender must be selected")
     public Gender getGender() {
         return gender.get();
     }
