@@ -20,12 +20,6 @@ public class StageInitializer implements ApplicationListener<StageReadyEvent> {
 
     @Override
     public void onApplicationEvent(StageReadyEvent event) {
-//        try {
-//            FXMLLoader loader = new FXMLLoader(
-//                    StageInitializer.class.getResource("person-form.fxml"));
-        // Let Spring supply the controller so it can inject dependencies.
-//            loader.setControllerFactory(applicationContext::getBean);
-//            Parent root = loader.load();
         var personViewController = applicationContext.getBean(PersonViewController.class);
         var root = personViewController.getView();
 
@@ -34,8 +28,5 @@ public class StageInitializer implements ApplicationListener<StageReadyEvent> {
         stage.setScene(new Scene(root, 420, 320));
         stage.setResizable(false);
         stage.show();
-//        } catch (IOException e) {
-//            throw new RuntimeException("Failed to load person-form.fxml", e);
-//        }
     }
 }

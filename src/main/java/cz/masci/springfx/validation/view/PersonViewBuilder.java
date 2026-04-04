@@ -54,20 +54,14 @@ public class PersonViewBuilder implements Builder<Region> {
         var nameField = createTextField("Name", "name");
         nameField.textProperty().bindBidirectional(viewModel.nameProperty());
         var nameFiledWithError = enhanceWithValidation(nameField, TextInputControl::textProperty);
-//        var nameError = createErrorLabel("nameError");
-//        wireValidation(nameField, nameField.textProperty(), nameError, "name");
 
         var ageField = createTextField("Age", "age");
         ageField.textProperty().bindBidirectional(viewModel.ageProperty());
         var ageFieldWithError = enhanceWithValidation(ageField, TextInputControl::textProperty);
-//        var ageError = createErrorLabel("ageError");
-//        wireValidation(ageField, ageField.textProperty(), ageError, "age");
 
         var genderComboBox = createComboBox(items);
         genderComboBox.valueProperty().bindBidirectional(viewModel.genderProperty());
         var genderComboBoxWithError = enhanceWithValidation(genderComboBox, MFXComboBox::valueProperty);
-//        var genderError = createErrorLabel("genderError");
-//        wireValidation(genderComboBox, genderComboBox.valueProperty(), genderError, "gender");
 
         var saveButton = ButtonBuilder.button()
                 .setOnAction(_ -> onChange.run())
@@ -84,13 +78,6 @@ public class PersonViewBuilder implements Builder<Region> {
                 .setHGap(10.0)
                 .setVGap(4.0)
                 .setColumnConstraints(col)
-//                .addRow(0, nameField)
-//                .addRow(1, nameError)
-//                .addRow(2, ageField)
-//                .addRow(3, ageError)
-//                .addRow(4, genderComboBox)
-//                .addRow(5, genderError)
-//                .addRow(6, saveButton)
                 .addRow(0, nameFiledWithError)
                 .addRow(1, ageFieldWithError)
                 .addRow(2, genderComboBoxWithError)
@@ -124,8 +111,6 @@ public class PersonViewBuilder implements Builder<Region> {
                 .setId(id)
                 .setStyleClasses("error-label")
                 .getNode();
-//        GridPane.setColumnSpan(label, 2);
-//        GridPane.setColumnIndex(label, 0);
         label.setVisible(false);
         return label;
     }
